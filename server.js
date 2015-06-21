@@ -1,5 +1,5 @@
 'use strict';
-
+//comment_1
 process.env.NODE_ENV = 'development';
 process.env.HOST = 'http://localhost:8876';
 process.env.PORT = 8876;
@@ -72,13 +72,14 @@ app.get('/transcode', function (req, res, next) {
     var job = sox.transcode(srcFilePath, dstFilePath, {
         sampleRate: 44100,
         format: 'mp3',
-        channelCount: 2,
-        bitRate: 192 * 1024,
-        compressionQuality: 5, // see `man soxformat` search for '-C' for more info
+        channelCount: 1,
+        bitRate: 64 * 1024,
+        compressionQuality: 2 // see `man soxformat` search for '-C' for more info
     });
 
     job.on('error', function(err) {
         console.error(err);
+        res.status(500).send({error: err});
     });
 
     job.on('progress', function(amountDone, amountTotal) {
@@ -113,10 +114,11 @@ app.get('/transcode', function (req, res, next) {
 
     job.on('end', function() {
         console.log("all done");
+        res.status(200).send({success: true});
     });
     
     job.start();
-    res.status(200).send({success: true});
+    //res.status(200).send({success: true});
 });
 
 app.listen(port, function () {
